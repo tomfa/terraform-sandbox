@@ -112,7 +112,6 @@ resource "aws_cloudfront_distribution" "prod_distribution" {
             cookies {
                 forward = "all"
             }
-            headers = ["*"]
       }
 
         viewer_protocol_policy = "allow-all"
