@@ -110,7 +110,7 @@ resource "aws_cloudfront_distribution" "prod_distribution" {
             query_string = true
   
             cookies {
-                forward = "all"
+                forward = "none"
             }
       }
 
