@@ -63,7 +63,7 @@ resource "aws_s3_bucket" "prod" {
             "Resource": "arn:aws:s3:::${var.bucket_name}/*"
         },
         {
-            "Sid": "",
+            "Sid": "LetUserUsedAsPleased",
             "Effect": "Allow",
             "Principal": {
                 "AWS": "${aws_iam_user.prod_user.arn}"
@@ -83,7 +83,7 @@ resource "aws_cloudfront_distribution" "prod_distribution" {
     origin {
         domain_name = "${aws_s3_bucket.prod.website_endpoint}"
         origin_id   = "S3-${aws_s3_bucket.prod.bucket}"
-  
+
         custom_origin_config  {
             http_port = 80
             https_port = 443
@@ -108,7 +108,7 @@ resource "aws_cloudfront_distribution" "prod_distribution" {
 
         forwarded_values {
             query_string = true
-  
+
             cookies {
                 forward = "none"
             }

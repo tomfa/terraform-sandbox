@@ -88,7 +88,7 @@ resource "aws_s3_bucket" "prod_bucket" {
             "Resource": "arn:aws:s3:::${var.prod_bucket_name}/*"
         },
         {
-            "Sid": "",
+            "Sid": "LetUserUsedAsPleased",
             "Effect": "Allow",
             "Principal": {
                 "AWS": "${aws_iam_user.prod_user.arn}"

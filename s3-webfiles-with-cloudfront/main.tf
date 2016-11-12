@@ -4,36 +4,7 @@ provider "aws" {
     region = "${var.aws_region}"
 }
 
-resource "aws_iam_user" "user" {
-    name = "${var.bucket_name}-user"
-    path = "/system/"
-}
-
-resource "aws_iam_access_key" "user" {
-    user = "${aws_iam_user.user.name}"
-}
-
-resource "aws_iam_user_policy" "user_ro" {
-    name = "s3_bucket_user_policy"
-    user = "${aws_iam_user.user.name}"
-   policy= <<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": "s3:*",
-            "Resource": [
-                "arn:aws:s3:::${var.bucket_name}",
-                "arn:aws:s3:::${var.bucket_name}/*"
-            ]
-        }
-   ]
-}
-EOF
-}
-
-resource "aws_s3_bucket" "bucket" {
+resource "aws_s3_bucket" "mybucket" {
     bucket = "${var.bucket_name}"
     acl = "public-read"
 
@@ -61,18 +32,6 @@ resource "aws_s3_bucket" "bucket" {
             },
             "Action": "s3:GetObject",
             "Resource": "arn:aws:s3:::${var.bucket_name}/*"
-        },
-        {
-            "Sid": "",
-            "Effect": "Allow",
-            "Principal": {
-                "AWS": "${aws_iam_user.user.arn}"
-            },
-            "Action": "s3:*",
-            "Resource": [
-                "arn:aws:s3:::${var.bucket_name}",
-                "arn:aws:s3:::${var.bucket_name}/*"
-            ]
         }
     ]
 }
@@ -81,8 +40,8 @@ EOF
 
 resource "aws_cloudfront_distribution" "distribution" {
     origin {
-        domain_name = "${aws_s3_bucket.bucket.website_endpoint}"
-        origin_id   = "S3-${aws_s3_bucket.bucket.bucket}"
+        domain_name = "${aws_s3_bucket.mybucket.website_endpoint}"
+        origin_id   = "S3-${aws_s3_bucket.mybucket.bucket}"
 
         custom_origin_config  {
             http_port = 80
@@ -104,7 +63,7 @@ resource "aws_cloudfront_distribution" "distribution" {
     default_cache_behavior {
         allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
         cached_methods   = ["GET", "HEAD"]
-        target_origin_id = "S3-${aws_s3_bucket.bucket}"
+        target_origin_id = "S3-${aws_s3_bucket.mybucket.bucket}"
 
         forwarded_values {
             query_string = true
